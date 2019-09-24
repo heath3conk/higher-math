@@ -1,0 +1,87 @@
+buildscript {
+//	repositories {
+//		mavenCentral()
+//	}
+
+	dependencies {
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50"
+		classpath "io.spring.gradle:dependency-management-plugin:$springDependencyManagementVersion"
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+		classpath "org.springframework.boot:spring-boot-starter-web:$springBootStarterWebVersion"
+	}
+}
+
+plugins {
+	id "org.springframework.boot" version "2.1.8.RELEASE"
+	id "io.spring.dependency-management" version "1.0.8.RELEASE"
+	id 'info.solidsoft.pitest' version '1.4.5'
+//	kotlin "jvm" version "1.2.71"
+//	kotlin("plugin.spring") version "1.2.71"
+}
+
+repositories {
+	mavenCentral()
+}
+apply plugin: 'kotlin'
+//apply plugin: 'kotlin-allopen'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: "info.solidsoft.pitest"
+
+ext['junit-jupiter.version'] = "$junitJupiterVersion" //fixes spring boot issue - https://stackoverflow.com/a/54605523
+
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+	implementation "org.springframework.boot:spring-boot-starter-web"
+	implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+	implementation "org.jetbrains.kotlin:kotlin-reflect"
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+	compileOnly "org.projectlombok:lombok"
+	annotationProcessor "org.projectlombok:lombok"
+	testImplementation "org.springframework.boot:spring-boot-starter-test"
+//	testImplementation "org.springframework.boot:spring-boot-starter-test" {
+//		exclude(module = "junit")
+//	}
+	testImplementation "org.junit.jupiter:junit-jupiter-api"
+//	testImplementation "org.junit.platform:junit-platform-launcher:jar:1.3.2"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+}
+group = "com.conk"
+version = "0.0.1-SNAPSHOT"
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+//wrapper{
+//	gradleVersion = gradleVersion
+//	distributionType = Wrapper.DistributionType.BIN
+//}
+
+//configurations {
+//	compileOnly {
+//		extendsFrom(configurations.annotationProcessor.get())
+//	}
+//}
+
+sourceCompatibility = jvmTarget
+
+compileKotlin {
+	kotlinOptions.jvmTarget = jvmTarget
+}
+
+compileTestKotlin {
+	kotlinOptions.jvmTarget = jvmTarget
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+pitest {
+	targetClasses = ['com.conk.highermath.*.*']
+	threads = 8
+	outputFormats = ['HTML']
+	jvmArgs = ['-Xmx1024m']
+//	excludedTestClasses = ['com.hcsc.experience.membership.search.api.ResponseGeneratorIntegrationTest']
+}
