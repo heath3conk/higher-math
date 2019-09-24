@@ -1,19 +1,12 @@
 package com.conk.highermath
 
 import org.junit.jupiter.api.Test
-import com.conk.highermath.CalculationService
-import org.assertj.core.api.Assert
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.mockito.InjectMocks
-import org.mockito.runners.MockitoJUnitRunner
-import org.springframework.beans.factory.annotation.Autowired
 
 
-@RunWith(MockitoJUnitRunner::class)
 class CalculationServiceTest {
 
-    @InjectMocks
-    lateinit var calculationService: CalculationService
+    val calculationService = CalculationService()
 
     var queryDate = "1995-12-16"
 
@@ -28,10 +21,41 @@ class CalculationServiceTest {
 
     @Test
     fun `log returns query year no later than 2019`() {
-        val resultOfTwentyFour = calculationService.logYear(1, 24)
+        val resultOfTwentyFour = calculationService.logYear(16777216, 2)
         assertEquals(2019, resultOfTwentyFour)
 
         val resultMoreThanTwentyFour = calculationService.logYear(33554432, 2)
         assertEquals(1996, resultMoreThanTwentyFour)
+    }
+
+    @Test
+    fun `mod returns query month no earlier than 1`() {
+        val resultOfZero = calculationService.modMonth(1)
+        assertEquals(1, resultOfZero)
+    }
+
+    @Test
+    fun `modMonth returns query month no later than 12`() {
+        val resultOfTwelve = calculationService.modMonth(25)
+        assertEquals(12, resultOfTwelve)
+    }
+
+   @Test
+   fun `rootDay returns query day no earlier than 1`() {
+       val resultOfZero = calculationService.rootDay(0)
+       assertEquals(1, resultOfZero)
+   }
+
+    @Test
+    fun `rootDay returns query day no later than 31`() {
+        val resultOfThirtyTwo = calculationService.rootDay(3969)
+        assertEquals(31, resultOfThirtyTwo)
+    }
+
+    @Test
+    fun `birthday returns date within valid range`() {
+        val sampleDate = "1970-12-16"
+        val result = calculationService.birthday(sampleDate)
+
     }
 }
